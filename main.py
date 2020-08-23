@@ -41,7 +41,6 @@ class phonebook(Frame):
         #selection_id = id_list.curselection()[0]
         #name = id_list.get(selection_id)
         #data = self.my_db.get_record(name)
-        return 
         self.txt_fname.delete(0, END)
         self.txt_fname.insert(0,data[0])
         self.txt_lname.delete(0, END)
@@ -62,8 +61,16 @@ class phonebook(Frame):
     def connect_db(self):
         self.conn = create_connection("recipebook.db")
 
-    def onClick(self):
-        print ("ON Click")
+    def onClickFind(self):
+        print ("Find")
+        cur = self.conn.cursor()
+        cur.execute("SELECT * FROM issuingTable WHERE name LIKE ?", ('%'+ self.txt_fname.get() + '%',))
+        rows = cur.fetchall()
+        self.txt_phone.delete(0, END)
+        self.txt_phone.insert(0,rows[0][10])
+
+    def onClickAdd(self):
+        print ("Add")
         sql = ''' INSERT INTO issuingTable (name,whatsapp)
                   VALUES(?,?) '''
         data = (self.txt_fname.get(),self.txt_phone.get())
@@ -101,12 +108,14 @@ class phonebook(Frame):
         self.scrollbar1.grid(row = 1, column = 5, rowspan = 7, sticky = 'nes')
         self.lstList1.grid(row = 1, column = 2, rowspan = 7, columnspan = 3, sticky = 'nsew')
         #setting up buttons
-        self.btn_add = Button(self.master, width = 12, height = 2, text = 'Add', command = lambda: self.onClick())
+        self.btn_add = Button(self.master, width = 12, height = 2, text = 'Add', command = lambda: self.onClickAdd())
         self.btn_add.grid(row = 8, column = 0, padx = (25,0), pady = (45,10), sticky = 'w')
+        self.btn_add = Button(self.master, width = 12, height = 2, text = 'Find', command = lambda: self.onClickFind())
+        self.btn_add.grid(row = 8, column = 1, padx = (25,0), pady = (45,10), sticky = 'w')
         self.btn_update = Button(self.master, width = 12, height = 2, text = 'Update', command = lambda: phonebook_func.onUpdate(self))
-        self.btn_update.grid(row = 8, column = 1, padx = (15,0), pady = (45,10), sticky = 'w')
+        self.btn_update.grid(row = 8, column = 2, padx = (15,0), pady = (45,10), sticky = 'w')
         self.btn_delete = Button(self.master, width = 12, height = 2, text = 'Delete', command = lambda: phonebook_func.onDelete(self))
-        self.btn_delete.grid(row = 8, column = 2, padx = (15,0), pady = (45,10), sticky = 'w')
+        self.btn_delete.grid(row = 8, column = 3, padx = (15,0), pady = (45,10), sticky = 'w')
         self.btn_close = Button(self.master, width = 12, height = 2, text = 'Close', command = self.on_close)
         self.btn_close.grid(row = 8, column = 4, padx = (15,0), pady = (45,10), sticky = 'e')
 if __name__ == "__main__":
