@@ -3,15 +3,41 @@
 Created on Mon Oct 22 20:26:38 2018
 @author: hnambur
 """
+import sqlite3
 from tkinter import Frame,Tk,Label,Entry,Scrollbar,Listbox,Button,END,VERTICAL
+
+def create_connection(db_file):
+    """ create a database connection to a SQLite database """
+    conn = None
+    try:
+        conn = sqlite3.connect(db_file)
+        print ("DB Load Success!!")
+    except Error as e:
+        print(e)
+    return conn
+
+def insert_data(self):
+
+        sql = ''' INSERT INTO issuingTable (name,whatsapp)
+                  VALUES(?,?) '''
+        data = {self.txt_fname,self.txt_phone}
+        print ("data : ", data)
+        cur = self.conn.cursor()
+        #cur.execute(sql,data)
+        #self.conn.commit()
+        #return cur.lastrowid
+
 class phonebook(Frame):
     def __init__(self,master):
         Frame.__init__(self)
         self.master = master
         
         #self.my_db = db()
+        self.connect_db()
         self.load_gui()
         self.load_list()
+        
+
     def onClear(self):
     #clears the textboxes
         self.txt_fname.delete(0,END)
@@ -26,9 +52,11 @@ class phonebook(Frame):
         
     def on_select(self,event):
         id_list = event.widget
-        selection_id = id_list.curselection()[0]
-        name = id_list.get(selection_id)
+        #selection_id = id_list.curselection()[0]
+        #name = id_list.get(selection_id)
         #data = self.my_db.get_record(name)
+        print ("ON SELECT")
+        return 
         self.txt_fname.delete(0, END)
         self.txt_fname.insert(0,data[0])
         self.txt_lname.delete(0, END)
@@ -45,7 +73,19 @@ class phonebook(Frame):
         """
         self.master.destroy()
         
-        
+    def connect_db(self):
+        self.conn = create_connection("recipebook.db")
+
+    def onClick(self):
+        print ("ON Click")
+        sql = ''' INSERT INTO issuingTable (name,whatsapp)
+                  VALUES(?,?) '''
+        data = (self.txt_fname.get(),self.txt_phone.get())
+        print ("data : ", data)
+        cur = self.conn.cursor()
+        cur.execute(sql,data)
+        self.conn.commit()
+    
     def load_gui(self):
     #setting up gui labels
         self.lbl_fname = Label(self.master, text = 'First Name: ')
@@ -75,7 +115,7 @@ class phonebook(Frame):
         self.scrollbar1.grid(row = 1, column = 5, rowspan = 7, sticky = 'nes')
         self.lstList1.grid(row = 1, column = 2, rowspan = 7, columnspan = 3, sticky = 'nsew')
         #setting up buttons
-        self.btn_add = Button(self.master, width = 12, height = 2, text = 'Add', command = lambda: phonebook_func.addToList(self))
+        self.btn_add = Button(self.master, width = 12, height = 2, text = 'Add', command = lambda: self.onClick())
         self.btn_add.grid(row = 8, column = 0, padx = (25,0), pady = (45,10), sticky = 'w')
         self.btn_update = Button(self.master, width = 12, height = 2, text = 'Update', command = lambda: phonebook_func.onUpdate(self))
         self.btn_update.grid(row = 8, column = 1, padx = (15,0), pady = (45,10), sticky = 'w')
@@ -86,4 +126,6 @@ class phonebook(Frame):
 if __name__ == "__main__":
     root = Tk()
     ph = phonebook(root)
+
+
     root.mainloop()
