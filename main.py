@@ -67,6 +67,8 @@ class phonebook(Frame):
         cur.execute("SELECT * FROM issuingTable WHERE name LIKE ?", ('%'+ self.txt_fname.get() + '%',))
         rows = cur.fetchall()
         self.txt_phone.delete(0, END)
+        self.txt_fname.delete(0, END)
+        self.txt_fname.insert(0,rows[0][1])
         self.txt_phone.insert(0,rows[0][10])
 
     def onClickAdd(self):
