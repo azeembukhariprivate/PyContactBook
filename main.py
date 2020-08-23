@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Oct 22 20:26:38 2018
+Updated on Sunday August 23 20:52:00 2020
 @author: hnambur
+@author: azeembukhariprivate
 """
 import sqlite3
 from tkinter import Frame,Tk,Label,Entry,Scrollbar,Listbox,Button,END,VERTICAL
@@ -16,23 +18,10 @@ def create_connection(db_file):
         print(e)
     return conn
 
-def insert_data(self):
-
-        sql = ''' INSERT INTO issuingTable (name,whatsapp)
-                  VALUES(?,?) '''
-        data = {self.txt_fname,self.txt_phone}
-        print ("data : ", data)
-        cur = self.conn.cursor()
-        #cur.execute(sql,data)
-        #self.conn.commit()
-        #return cur.lastrowid
-
 class phonebook(Frame):
     def __init__(self,master):
         Frame.__init__(self)
         self.master = master
-        
-        #self.my_db = db()
         self.connect_db()
         self.load_gui()
         self.load_list()
@@ -46,16 +35,12 @@ class phonebook(Frame):
         self.txt_email.delete(0,END)
     def load_list(self):
         print("Load List")
-        #all_records = self.my_db.get_all_records()
-        #for record in all_records:
-        #    self.lstList1.insert(0,str(record[2]))
         
     def on_select(self,event):
         id_list = event.widget
         #selection_id = id_list.curselection()[0]
         #name = id_list.get(selection_id)
         #data = self.my_db.get_record(name)
-        print ("ON SELECT")
         return 
         self.txt_fname.delete(0, END)
         self.txt_fname.insert(0,data[0])
@@ -71,6 +56,7 @@ class phonebook(Frame):
         """
         Closes the window
         """
+        self.conn.close()
         self.master.destroy()
         
     def connect_db(self):
@@ -126,6 +112,4 @@ class phonebook(Frame):
 if __name__ == "__main__":
     root = Tk()
     ph = phonebook(root)
-
-
     root.mainloop()
