@@ -6,10 +6,34 @@ Updated on Sunday August 23 20:52:00 2020
 @author: azeembukhariprivate
 """
 import sqlite3
+import socket
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 from tkinter import Frame,Tk,Label,Entry,Scrollbar,Listbox,Button,END,VERTICAL
+import platform    # For getting the operating system name
+import subprocess  # For executing a shell command
+
+def pyping(host):
+    """
+    Returns True if host (str) responds to a ping request.
+    Remember that a host may not respond to a ping (ICMP) request even if the host name is valid.
+    """
+
+    # Option for the number of packets as a function of
+    param = '-n' if platform.system().lower()=='windows' else '-c'
+
+    # Building the command. Ex: "ping -c 1 google.com"
+    command = ['ping', param, '1', host]
+
+    return subprocess.call(command) == 0
+
+def connect_ip(hostname, port):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        socket.setdefaulttimeout(1)
+        result = sock.connect_ex((hostname, port))
+        sock.close()
+        return result == 0
 
 def create_connection(db_file):
     """ create a database connection to a SQLite database """
@@ -158,16 +182,31 @@ class App2(ttk.Frame):
 
     def create_widgets(self):
         """Create the widgets for the GUI"""
-        self.btn_add = Button(self.master, width = 12, height = 2, text = 'Get Me Free IP', command = lambda: self.onClickAdd())
-        self.btn_add.grid(row = 8, column = 0, padx = (25,0), pady = (45,10), sticky = 'w')
-                
-    def convert_feet_to_meters(self):
-        """Converts feet to meters, uses string vars and converts them to floats"""
-        self.measurement = float(self.entry.get())
-        self.meters = self.measurement * 0.3048
-        self.result.set(self.meters)
+        self.btn_get_me_ip = Button(self.master, width = 12, height = 2, text = 'Get Me Free IP', command = lambda: self.get_free_ip())
+        self.btn_get_me_ip.grid(row = 8, column = 0, padx = (25,0), pady = (45,10), sticky = 'w')
+        self.txt_ip_range = Entry(self.master, text = '')
+        self.txt_ip_range.grid(row = 8, column = 4, columnspan = 2, padx = (10,20), pady = (50,10), sticky = 'new')
+        self.lbl_ip_range = Label(self.master, text = 'IP Range (xxx.xxx.xxx) ')
+        self.lbl_ip_range.grid(row = 8, column = 2, padx = (20,40), pady = (50,10), sticky = 'nw')
 
+    def get_free_ip(self):
+        count = 0
+        for i in self.txt_ip_range.get(): 
+            if i == '.': 
+                count = count + 1
+        if count != 2:
+            messagebox.showinfo("Invalid IP Range"," Please input as xxx.xxx.xxx (Eg : 192.168.1)")
+            return
 
+        for i in range(1,255):
+            res = connect_ip(self.txt_ip_range.get()+"."+str(i), 135)
+            #res = pyping("192.168.100."+str(i))
+            if res:
+                print("Device found at: ", self.txt_ip_range.get()+"."+str(i) + ":"+str(135))
+            else :
+                messagebox.showinfo("Take your IP : ",self.txt_ip_range.get()+"."+str(i))
+                break
+    
 if __name__ == "__main__":
     global window
     window = Tk()
@@ -177,7 +216,7 @@ if __name__ == "__main__":
     frame1 = ttk.Frame(notebook)
     frame2 = ttk.Frame(notebook)
     notebook.add(frame1, text="IP Table")
-    notebook.add(frame2, text="Tab2")
+    notebook.add(frame2, text="IT Tools")
     notebook.grid()
 
     #Create tab frames
