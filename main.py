@@ -147,6 +147,8 @@ class phonebook(Frame):
         #self.btn_delete.grid(row = 8, column = 3, padx = (15,0), pady = (45,10), sticky = 'w')
         self.btn_close = Button(self.master, width = 12, height = 2, text = 'Close', command = self.on_close)
         self.btn_close.grid(row = 8, column = 4, padx = (15,15), pady = (45,10), sticky = 'e')
+
+
 class App2(ttk.Frame):
     """ Application to convert feet to meters or vice versa. """
     def __init__(self, master=None):
@@ -156,25 +158,9 @@ class App2(ttk.Frame):
 
     def create_widgets(self):
         """Create the widgets for the GUI"""
-        # 1 textbox (stringvar)
-        self.entry= StringVar()
-        self.textBox1= ttk.Entry(self, textvariable=self.entry).grid(row=0, column=1)
-
-        # 5 labels (3 static, 1 stringvar)
-        self.displayLabel1 = ttk.Label(self, text="feet").grid(row=0, column=2, sticky=W)
-        self.displayLabel2 = ttk.Label(self, text="is equivalent to:").grid(row=1, column=0)
-        self.result= StringVar()
-        self.displayLabel3 = ttk.Label(self, textvariable=self.result).grid(row=1, column=1)
-        self.displayLabel4 = ttk.Label(self, text="meters").grid(row=1, column=2, sticky=W)
-
-        # 2 buttons
-        self.calculateButton = ttk.Button(self, text="Calculate", command=self.convert_feet_to_meters).grid(row=2, column=2, sticky=(S,E))
-        self.quitButton = ttk.Button(self, text="Quit", command=window.destroy).grid(row=2, column=1, sticky=(S,E))
-
-        #exitApplication = tk.Button(root, text='Exit Application', command=root.destroy)
-        #canvas1.create_window(85, 300, window=exitApplication) 
-
-
+        self.btn_add = Button(self.master, width = 12, height = 2, text = 'Get Me Free IP', command = lambda: self.onClickAdd())
+        self.btn_add.grid(row = 8, column = 0, padx = (25,0), pady = (45,10), sticky = 'w')
+                
     def convert_feet_to_meters(self):
         """Converts feet to meters, uses string vars and converts them to floats"""
         self.measurement = float(self.entry.get())
